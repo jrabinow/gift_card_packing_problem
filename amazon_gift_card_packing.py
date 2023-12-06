@@ -24,22 +24,28 @@ FREE_SHIPPING_MIN = 25.0
 # if your order does not qualify for free shipping, tack on an additional shipping cost of NONFREE_SHIPPING_COST
 NONFREE_SHIPPING_COST = 5.99
 # you can set the tax for each individual item. Only set this variable to non-zero if you haven't got the tax price for each item
-EFFECTIVE_TAX_PCT = 0 # 10
+EFFECTIVE_TAX_PCT = 0  # 10
 
 
 class Purchase(object):
-    def __init__(self, name, price, tax=0.0, shipping_fee=0.0, free_shipping_qualifier=False):
+    def __init__(
+        self, name, price, tax=0.0, shipping_fee=0.0, free_shipping_qualifier=False
+    ):
         self.name = name
         self.price = price
         self.tax = tax
         self.shipping_fee = shipping_fee
         self.free_shipping_qualifier = free_shipping_qualifier
         if shipping_fee == 0 and not free_shipping_qualifier:
-            LOG.warn("item {} has $0 shipping fee and doesn't qualify for free shipping. "
-                "You may want to double-check that".format(name))
+            LOG.warn(
+                "item {} has $0 shipping fee and doesn't qualify for free shipping. "
+                "You may want to double-check that".format(name)
+            )
         elif shipping_fee > 0 and free_shipping_qualifier:
-            LOG.warn("item {} qualifies for free shipping and has a shipping cost."
-                "You may want to double-check that".format(name))
+            LOG.warn(
+                "item {} qualifies for free shipping and has a shipping cost."
+                "You may want to double-check that".format(name)
+            )
 
 
 PURCHASES = [
@@ -52,8 +58,15 @@ PURCHASES = [
     Purchase("printing paper", price=8.99, tax=1.35, free_shipping_qualifier=True),
     Purchase("radar detect power cord", price=5.99, tax=0.99, shipping_fee=4.99),
     Purchase("steel wool", price=3.31, tax=0.84, free_shipping_qualifier=True),
-    Purchase("tao te ching", price=12.15, tax=1.45, shipping_fee=3.99, free_shipping_qualifier=False)
+    Purchase(
+        "tao te ching",
+        price=12.15,
+        tax=1.45,
+        shipping_fee=3.99,
+        free_shipping_qualifier=False,
+    ),
 ]
+
 
 def add_purchases(purchase_dict, tax_pct=EFFECTIVE_TAX_PCT):
     value = 0
@@ -67,12 +80,14 @@ def add_purchases(purchase_dict, tax_pct=EFFECTIVE_TAX_PCT):
 
     return value
 
+
 def free_shipping_eligible_total(purchase_dict):
     eligible_price_total = 0
     for purchase in purchase_dict.values():
         if purchase.free_shipping_qualifier:
             eligible_price_total += purchase.price
     return eligible_price_total
+
 
 def generate_combos(purchase_dict, stuff):
     best_combo = (purchase_dict, add_purchases(purchase_dict))
@@ -97,16 +112,20 @@ def generate_combos(purchase_dict, stuff):
 
 
 def main():
-    purchase_dict = {
-        purchase.name: purchase for purchase in PURCHASES
-    }
+    purchase_dict = {purchase.name: purchase for purchase in PURCHASES}
     best_combo_purchases, best_combo_total = generate_combos({}, purchase_dict)
 
     for purchase in best_combo_purchases.values():
-        print("{} = ${:.2f} (${:.2f} + ${:.2f} tax)".format(
-            purchase.name, purchase.price + purchase.tax, purchase.price, purchase.tax
-        ))
+        print(
+            "{} = ${:.2f} (${:.2f} + ${:.2f} tax)".format(
+                purchase.name,
+                purchase.price + purchase.tax,
+                purchase.price,
+                purchase.tax,
+            )
+        )
     print("----------\ntotal: ${:.2f}\n----------".format(best_combo_total))
+
 
 if __name__ == "__main__":
     main()
