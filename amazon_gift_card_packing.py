@@ -96,10 +96,11 @@ def generate_combos(purchase_dict, stuff):
 
     for name, purchase in stuff.items():
         purchase_dict[name] = purchase
-        del stuff[name]
         value = add_purchases(purchase_dict)
         if value <= GIFT_CARD_TOTAL:
-            proposed_purchases, proposed_price = generate_combos(purchase_dict, stuff)
+            proposed_purchases, proposed_price = generate_combos(
+                purchase_dict, {k: v for k, v in stuff.items() if k != name}
+            )
             if proposed_price > best_combo[1] and proposed_price <= GIFT_CARD_TOTAL:
                 if free_shipping_eligible_total(proposed_purchases) < FREE_SHIPPING_MIN:
                     proposed_price += NONFREE_SHIPPING_COST
